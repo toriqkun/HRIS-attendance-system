@@ -13,5 +13,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["prisma.config.ts"]
+  "include": ["**/*.ts"]
 }
