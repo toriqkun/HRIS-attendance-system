@@ -1,13 +1,29 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Employee {
+  id         Int          @id @default(autoincrement())
+  name       String
+  department String?
+  position   String?
+  createdAt  DateTime     @default(now())
+  attendance Attendance[]
+}
+
+model Attendance {
+  id         Int            @id @default(autoincrement())
+  employeeId Int
+  type       AttendanceType
+  timestamp  DateTime       @default(now())
+  employee   Employee       @relation(fields: [employeeId], references: [id])
+}
+
+enum AttendanceType {
+  IN
+  OUT
 }
