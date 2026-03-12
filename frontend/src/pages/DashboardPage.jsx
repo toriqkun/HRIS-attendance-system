@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Users, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import api from '../services/api';
 
 export default function DashboardPage() {
@@ -24,25 +25,25 @@ export default function DashboardPage() {
       label: 'TOTAL EMPLOYEES', 
       value: summary?.totalEmployee || 0, 
       color: 'indigo', 
-      icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' 
+      icon: Users 
     },
     { 
       label: 'PRESENT TODAY', 
       value: summary?.presentToday || 0, 
       color: 'emerald', 
-      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' 
+      icon: CheckCircle 
     },
     { 
       label: 'LATE ARRIVALS', 
       value: summary?.late || 0, 
       color: 'amber', 
-      icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' 
+      icon: Clock 
     },
     { 
       label: 'INCOMPLETE LOGS', 
       value: summary?.incomplete || 0, 
       color: 'rose', 
-      icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' 
+      icon: AlertTriangle 
     },
   ];
 
@@ -64,22 +65,23 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="glass group p-8 rounded-4xl hover:scale-105 transition-all duration-300">
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`p-3 rounded-2xl bg-${stat.color}-500/10 text-${stat.color}-400 group-hover:scale-110 transition-transform`}>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon} />
-                    </svg>
+            {stats.map((stat, idx) => {
+              const Icon = stat.icon;
+              return (
+                <div key={idx} className="glass group p-8 rounded-4xl hover:scale-105 transition-all duration-300">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`p-3 rounded-2xl bg-${stat.color}-500/10 text-${stat.color}-400 group-hover:scale-110 transition-transform`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <div className={`text-xs font-black text-${stat.color}-500 opacity-50 tracking-widest`}>LIVE</div>
                   </div>
-                  <div className={`text-xs font-black text-${stat.color}-500 opacity-50 tracking-widest`}>LIVE</div>
+                  <div className="space-y-1">
+                    <div className="text-4xl font-black text-white leading-none">{stat.value}</div>
+                    <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{stat.label}</div>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-4xl font-black text-white leading-none">{stat.value}</div>
-                  <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{stat.label}</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
