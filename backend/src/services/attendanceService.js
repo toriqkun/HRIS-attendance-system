@@ -8,7 +8,6 @@ const getAllEmployees = async () => {
 const createAttendance = async (data) => {
   const employeeId = parseInt(data.employee_id);
   const type = data.type;
-
   const now = new Date();
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
@@ -31,6 +30,7 @@ const createAttendance = async (data) => {
       }
     }
   });
+
   const hasIn = existingRecords.some(r => r.type === 'IN');
   const hasOut = existingRecords.some(r => r.type === 'OUT');
 
@@ -118,43 +118,69 @@ const getAttendanceReport = async (startDate, endDate) => {
 };
 
 const getDashboardSummary = async () => {
-  const today = new Date();
+  const now = new Date();
+  const today = new Date(now);
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   const totalEmployees = await prisma.employee.count();
   
+  // 1. Today's Stats
   const todayAttendance = await prisma.attendance.findMany({
-    where: {
-      timestamp: {
-        gte: today,
-        lt: tomorrow,
-      }
-    }
+    where: { timestamp: { gte: today, lt: tomorrow } }
   });
 
-  const report = {};
+  const todayReport = {};
   todayAttendance.forEach(record => {
     const key = record.employeeId;
-    if (!report[key]) {
-      report[key] = { check_in: null, check_out: null };
-    }
-    if (record.type === 'IN') report[key].check_in = record.timestamp;
-    if (record.type === 'OUT') report[key].check_out = record.timestamp;
+    if (!todayReport[key]) todayReport[key] = { check_in: null, check_out: null };
+    if (record.type === 'IN') todayReport[key].check_in = record.timestamp;
+    if (record.type === 'OUT') todayReport[key].check_out = record.timestamp;
   });
 
   const summary = {
     totalEmployee: totalEmployees,
-    presentToday: Object.keys(report).length,
+    presentToday: Object.keys(todayReport).length,
     late: 0,
-    incomplete: 0
+    incomplete: 0,
+    weeklyEfficiency: []
   };
 
-  Object.values(report).forEach(item => {
+  Object.values(todayReport).forEach(item => {
     const status = getAttendanceStatus(item.check_in, item.check_out);
     if (status === 'Late') summary.late++;
     if (status === 'Incomplete') summary.incomplete++;
+  });
+
+  // 2. Last 7 Days Efficiency
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+
+  const pastAttendance = await prisma.attendance.findMany({
+    where: { timestamp: { gte: sevenDaysAgo, lt: tomorrow }, type: 'IN' },
+    select: { timestamp: true, employeeId: true }
+  });
+
+  // Group by date
+  const efficiencyMap = {};
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(sevenDaysAgo);
+    d.setDate(d.getDate() + i);
+    const dateStr = d.toISOString().split('T')[0];
+    efficiencyMap[dateStr] = new Set();
+  }
+
+  pastAttendance.forEach(record => {
+    const dateStr = record.timestamp.toISOString().split('T')[0];
+    if (efficiencyMap[dateStr]) {
+      efficiencyMap[dateStr].add(record.employeeId);
+    }
+  });
+
+  summary.weeklyEfficiency = Object.keys(efficiencyMap).sort().map(date => {
+    const presentCount = efficiencyMap[date].size;
+    return totalEmployees > 0 ? Math.round((presentCount / totalEmployees) * 100) : 0;
   });
 
   return summary;

@@ -90,16 +90,19 @@ export default function DashboardPage() {
         <div className="glass p-8 rounded-[2.5rem] space-y-4">
           <h3 className="text-xl font-bold text-white">Daily Efficiency</h3>
           <div className="h-48 bg-white/5 rounded-3xl flex items-end justify-between p-6 gap-2">
-            {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
+            {(summary?.weeklyEfficiency || [0, 0, 0, 0, 0, 0, 0]).map((h, i) => (
               <div key={i} className="w-full bg-indigo-500/20 rounded-t-lg relative group">
                 <div 
                   className="absolute bottom-0 w-full bg-indigo-500 rounded-lg group-hover:bg-indigo-400 transition-all duration-500" 
                   style={{ height: `${h}%` }}
                 ></div>
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  {h}%
+                </div>
               </div>
             ))}
           </div>
-          <p className="text-gray-500 text-xs">Simulated data of presence throughout the week.</p>
+          <p className="text-gray-500 text-xs text-center">Efficiency over the last 7 days (Presence rate).</p>
         </div>
 
         <div className="glass p-8 rounded-[2.5rem] flex flex-col justify-center space-y-6">
