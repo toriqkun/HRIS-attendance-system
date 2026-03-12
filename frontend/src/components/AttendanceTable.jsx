@@ -12,10 +12,7 @@ export default function AttendanceTable({ refreshTrigger }) {
   const fetchTodayLogs = async () => {
     try {
       setLoading(true);
-      // Fetch report for today as a simple log
       const response = await api.get('/attendance/report');
-      // For the history table, we might just want to show the raw results or the processed report
-      // Let's show the processed report but limited to today for a better UX on this page
       const today = new Date().toISOString().split('T')[0];
       const todayLogs = response.data.filter(log => log.date === today);
       setLogs(todayLogs);
