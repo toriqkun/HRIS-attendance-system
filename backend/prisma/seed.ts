@@ -10,15 +10,23 @@ async function main() {
   const prisma = new PrismaClient({ adapter })
 
   try {
-    await prisma.attendance.deleteMany({})
-    await prisma.employee.deleteMany({})
-    await prisma.employee.createMany({
-      data: [
-        { name: "Toriq Abdul Rosyid", department: "IT", position: "Junior Fullstack Developer" },
-        { name: "Siti Rahma", department: "HR", position: "HR Manager" },
-        { name: "M.Hasbianur", department: "Finance", position: "Accountant" }
-      ]
-    })
+    const employees = [
+      { name: "Toriq Abdul Rosyid", department: "IT", position: "Junior Fullstack Developer" },
+      { name: "Siti Rahma", department: "HR", position: "HR Manager" },
+      { name: "M.Hasbianur", department: "Finance", position: "Accountant" },
+      { name: "Achyar Bagus", department: "Operations", position: "Warehouse Supervisor" },
+      { name: "Anisa Meilani", department: "Marketing", position: "Social Media Specialist" }
+    ]
+
+    for (const emp of employees) {
+      const existing = await prisma.employee.findFirst({
+        where: { name: emp.name }
+      })
+
+      if (!existing) {
+        await prisma.employee.create({ data: emp })
+      }
+    }
 
     console.log("Seed data inserted successfully")
   } catch (err) {
