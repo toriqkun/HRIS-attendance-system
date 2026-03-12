@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import attendanceRepository from '../repositories/attendanceRepository';
 
 export default function AttendanceTable({ refreshTrigger }) {
   const [logs, setLogs] = useState([]);
@@ -12,9 +12,9 @@ export default function AttendanceTable({ refreshTrigger }) {
   const fetchTodayLogs = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/attendance/report');
+      const data = await attendanceRepository.getReport();
       const today = new Date().toISOString().split('T')[0];
-      const todayLogs = response.data.filter(log => log.date === today);
+      const todayLogs = data.filter(log => log.date === today);
       setLogs(todayLogs);
     } catch (error) {
       console.error('Failed to fetch attendance logs', error);

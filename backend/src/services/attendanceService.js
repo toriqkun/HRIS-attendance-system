@@ -1,8 +1,9 @@
-const prisma = require('../utils/prisma');
+const employeeRepository = require('../repositories/employeeRepository');
+const attendanceRepository = require('../repositories/attendanceRepository');
 const getAttendanceStatus = require('../utils/attendanceStatus');
 
 const getAllEmployees = async () => {
-  return await prisma.employee.findMany();
+  return await employeeRepository.getAll();
 };
 
 const createAttendance = async (data) => {
@@ -14,22 +15,12 @@ const createAttendance = async (data) => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const employee = await prisma.employee.findUnique({
-    where: { id: employeeId }
-  });
+  const employee = await employeeRepository.getById(employeeId);
   if (!employee) {
     throw new Error('Employee not found');
   }
 
-  const existingRecords = await prisma.attendance.findMany({
-    where: {
-      employeeId,
-      timestamp: {
-        gte: today,
-        lt: tomorrow,
-      }
-    }
-  });
+  const existingRecords = await attendanceRepository.findByEmployeeInDateRange(employeeId, today, tomorrow);
 
   const hasIn = existingRecords.some(r => r.type === 'IN');
   const hasOut = existingRecords.some(r => r.type === 'OUT');
@@ -53,12 +44,10 @@ const createAttendance = async (data) => {
     }
   }
 
-  const created = await prisma.attendance.create({
-    data: {
-      employeeId,
-      type,
-      timestamp: now,
-    }
+  const created = await attendanceRepository.create({
+    employeeId,
+    type,
+    timestamp: now,
   });
 
   return {
@@ -71,7 +60,7 @@ const getAttendanceReport = async (startDate, endDate) => {
   const queryStartDate = startDate ? new Date(startDate) : undefined;
   const queryEndDate = endDate ? new Date(endDate) : undefined;
 
-  const attendanceRecords = await prisma.attendance.findMany({
+  const attendanceRecords = await attendanceRepository.findMany({
     where: {
       timestamp: {
         gte: queryStartDate,
@@ -124,12 +113,10 @@ const getDashboardSummary = async () => {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const totalEmployees = await prisma.employee.count();
+  const totalEmployees = await employeeRepository.count();
   
   // 1. Today's Stats
-  const todayAttendance = await prisma.attendance.findMany({
-    where: { timestamp: { gte: today, lt: tomorrow } }
-  });
+  const todayAttendance = await attendanceRepository.findTodayAttendance(today, tomorrow);
 
   const todayReport = {};
   todayAttendance.forEach(record => {
@@ -157,10 +144,7 @@ const getDashboardSummary = async () => {
   const sevenDaysAgo = new Date(today);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
 
-  const pastAttendance = await prisma.attendance.findMany({
-    where: { timestamp: { gte: sevenDaysAgo, lt: tomorrow }, type: 'IN' },
-    select: { timestamp: true, employeeId: true }
-  });
+  const pastAttendance = await attendanceRepository.findAttendanceInRange(sevenDaysAgo, tomorrow, 'IN');
 
   // Group by date
   const efficiencyMap = {};
@@ -192,3 +176,4 @@ module.exports = {
   getAttendanceReport,
   getDashboardSummary
 };
+

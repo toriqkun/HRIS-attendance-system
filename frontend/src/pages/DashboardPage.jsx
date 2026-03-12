@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
-import api from '../services/api';
+import attendanceRepository from '../repositories/attendanceRepository';
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState(null);
@@ -9,8 +9,8 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchSummary = async () => {
       try {
-        const response = await api.get('/attendance/summary');
-        setSummary(response.data);
+        const data = await attendanceRepository.getSummary();
+        setSummary(data);
       } catch (error) {
         console.error('Failed to fetch summary', error);
       } finally {

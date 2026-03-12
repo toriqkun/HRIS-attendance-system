@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import attendanceRepository from '../repositories/attendanceRepository';
 
 export default function ReportPage() {
   const [report, setReport] = useState([]);
@@ -17,10 +17,8 @@ export default function ReportPage() {
     setLoading(true);
     try {
       const { startDate, endDate } = filters;
-      const response = await api.get('/attendance/report', {
-        params: { startDate, endDate }
-      });
-      setReport(response.data);
+      const data = await attendanceRepository.getReport({ startDate, endDate });
+      setReport(data);
     } catch (error) {
       console.error('Failed to fetch report', error);
     } finally {

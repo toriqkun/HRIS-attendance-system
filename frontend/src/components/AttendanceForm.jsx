@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import attendanceRepository from '../repositories/attendanceRepository';
 
 export default function AttendanceForm({ onSuccess }) {
   const [employees, setEmployees] = useState([]);
@@ -13,8 +13,8 @@ export default function AttendanceForm({ onSuccess }) {
 
   const fetchEmployees = async () => {
     try {
-      const response = await api.get('/attendance/employees');
-      setEmployees(response.data);
+      const data = await attendanceRepository.getEmployees();
+      setEmployees(data);
     } catch (error) {
       console.error('Failed to fetch employees', error);
     }
@@ -30,13 +30,13 @@ export default function AttendanceForm({ onSuccess }) {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await api.post('/attendance', {
+      const data = await attendanceRepository.recordAttendance({
         employee_id: selectedEmployee,
         type: type
       });
       setMessage({ 
         type: 'success', 
-        text: `Successfully checked ${type === 'IN' ? 'IN' : 'OUT'} at ${response.data.formatted_time}` 
+        text: `Successfully checked ${type === 'IN' ? 'IN' : 'OUT'} at ${data.formatted_time}` 
       });
       if (onSuccess) onSuccess();
     } catch (error) {
