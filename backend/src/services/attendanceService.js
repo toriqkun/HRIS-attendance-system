@@ -9,7 +9,8 @@ const createAttendance = async (data) => {
   const employeeId = parseInt(data.employee_id);
   const type = data.type;
 
-  const today = new Date();
+  const now = new Date();
+  const today = new Date(now);
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -52,12 +53,18 @@ const createAttendance = async (data) => {
     }
   }
 
-  return await prisma.attendance.create({
+  const created = await prisma.attendance.create({
     data: {
       employeeId,
       type,
+      timestamp: now,
     }
   });
+
+  return {
+    ...created,
+    formatted_time: created.timestamp.toLocaleTimeString('en-GB', { hour12: false }).slice(0, 5)
+  };
 };
 
 const getAttendanceReport = async (startDate, endDate) => {
@@ -104,8 +111,8 @@ const getAttendanceReport = async (startDate, endDate) => {
 
   return Object.values(reportMap).map(item => ({
     ...item,
-    check_in: item.check_in ? item.check_in.toTimeString().slice(0, 5) : null,
-    check_out: item.check_out ? item.check_out.toTimeString().slice(0, 5) : null,
+    check_in: item.check_in ? item.check_in.toLocaleTimeString('en-GB', { hour12: false }).slice(0, 5) : null,
+    check_out: item.check_out ? item.check_out.toLocaleTimeString('en-GB', { hour12: false }).slice(0, 5) : null,
     status: getAttendanceStatus(item.check_in, item.check_out)
   }));
 };

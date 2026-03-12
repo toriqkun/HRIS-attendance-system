@@ -3,9 +3,8 @@ function getAttendanceStatus(checkIn, checkOut) {
 
   if (!checkOut) return "Incomplete";
 
-  // checkIn is a Date object, let's extract time HH:mm
-  const checkInTime = checkIn.toTimeString().slice(0, 5);
-
+  // Ensure we get HH:mm from the local time (WIB)
+  const checkInTime = checkIn.toLocaleTimeString('en-GB', { hour12: false }).slice(0, 5);
   if (checkInTime > lateLimit) {
     return "Late";
   }
