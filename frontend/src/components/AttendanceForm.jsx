@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 
-const AttendanceForm = () => {
+export default function AttendanceForm({ onSuccess }) {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,6 +38,7 @@ const AttendanceForm = () => {
         type: 'success', 
         text: `Successfully checked ${type === 'IN' ? 'IN' : 'OUT'} at ${response.data.formatted_time}` 
       });
+      if (onSuccess) onSuccess();
     } catch (error) {
       const errorMsg = error.response?.data?.error || 'Something went wrong';
       setMessage({ type: 'error', text: errorMsg });
@@ -97,4 +98,3 @@ const AttendanceForm = () => {
   );
 };
 
-export default AttendanceForm;

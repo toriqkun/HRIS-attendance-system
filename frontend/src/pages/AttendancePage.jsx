@@ -1,22 +1,39 @@
+import { useState } from 'react';
 import AttendanceForm from '../components/AttendanceForm';
+import AttendanceTable from '../components/AttendanceTable';
 
-const AttendancePage = () => {
+export default function AttendancePage() {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleAttendanceSuccess = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 space-y-8">
-      <div className="text-center">
-        <h1 className="text-4xl font-black text-white tracking-tight mb-2">
+    <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 space-y-12 bg-[#0f172a]">
+      <div className="text-center space-y-2">
+        <h1 className="text-5xl font-black text-white tracking-tight">
           ATTENDANCE <span className="text-gradient">PORTAL</span>
         </h1>
-        <p className="text-gray-400">Please provide your credentials to record attendance.</p>
+        <p className="text-gray-400 text-lg">Log your daily presence with ease.</p>
       </div>
       
-      <AttendanceForm />
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left: Form */}
+        <div className="lg:col-span-4 flex justify-center">
+          <AttendanceForm onSuccess={handleAttendanceSuccess} />
+        </div>
+
+        {/* Right: Today's Logs */}
+        <div className="lg:col-span-8">
+          <AttendanceTable refreshTrigger={refreshTrigger} />
+        </div>
+      </div>
       
-      <p className="text-gray-500 text-xs">
-        &copy; 2024 HRIS Attendance System. All rights reserved.
+      <p className="text-gray-500 text-sm">
+        &copy; 2024 HRIS Attendance System. Professional Presence Monitoring.
       </p>
     </div>
   );
 };
 
-export default AttendancePage;

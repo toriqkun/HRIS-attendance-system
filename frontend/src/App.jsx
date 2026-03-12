@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import AttendancePage from './pages/AttendancePage'
 
-function App() {
+export default function App() {
   const [started, setStarted] = useState(false);
 
   if (started) {
@@ -51,4 +51,3 @@ function App() {
   )
 }
 
-export default App
