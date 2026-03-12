@@ -10,7 +10,7 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center pt-32 pb-12 px-6 space-y-12 bg-[#0f172a]">
+    <div className="min-h-screen w-full flex flex-col items-center pt-32 pb-2 px-6 space-y-12 bg-[#0f172a]">
       <div className="text-center space-y-2">
         <h1 className="text-5xl font-black text-white tracking-tight">
           ATTENDANCE <span className="text-gradient">PORTAL</span>
@@ -27,10 +27,6 @@ export default function AttendancePage() {
           <AttendanceTable refreshTrigger={refreshTrigger} />
         </div>
       </div>
-      
-      <p className="text-gray-500 text-sm">
-        &copy; 2024 HRIS Attendance System. Professional Presence Monitoring.
-      </p>
     </div>
   );
 };

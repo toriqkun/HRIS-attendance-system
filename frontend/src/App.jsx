@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import AttendancePage from './pages/AttendancePage'
 import ReportPage from './pages/ReportPage'
+import DashboardPage from './pages/DashboardPage'
 import Navbar from './components/Navbar'
 
 export default function App() {
@@ -47,15 +48,7 @@ export default function App() {
       <main className="flex-1">
         {currentPage === 'attendance' && <AttendancePage />}
         {currentPage === 'report' && <ReportPage />}
-        {currentPage === 'dashboard' && (
-          <div className="min-h-screen flex items-center justify-center text-gray-500">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">📊</div>
-              <h2 className="text-2xl font-bold text-white">Dashboard is coming in Step 10!</h2>
-              <p>Stay tuned for rich analytics and summaries.</p>
-            </div>
-          </div>
-        )}
+        {currentPage === 'dashboard' && <DashboardPage />}
       </main>
     </div>
   );
