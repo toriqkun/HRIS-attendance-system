@@ -7,15 +7,13 @@ const getAllEmployees = async () => {
 
 const createAttendance = async (data) => {
   const employeeId = parseInt(data.employee_id);
-  const type = data.type; // IN or OUT
+  const type = data.type;
 
-  // Get start and end of today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // Check if employee exists
   const employee = await prisma.employee.findUnique({
     where: { id: employeeId }
   });
@@ -23,7 +21,6 @@ const createAttendance = async (data) => {
     throw new Error('Employee not found');
   }
 
-  // Find attendance records for today
   const existingRecords = await prisma.attendance.findMany({
     where: {
       employeeId,
@@ -33,7 +30,6 @@ const createAttendance = async (data) => {
       }
     }
   });
-
   const hasIn = existingRecords.some(r => r.type === 'IN');
   const hasOut = existingRecords.some(r => r.type === 'OUT');
 
@@ -83,7 +79,6 @@ const getAttendanceReport = async (startDate, endDate) => {
     }
   });
 
-  // Group by date and employee to calculate status
   const reportMap = {};
 
   attendanceRecords.forEach(record => {
@@ -115,8 +110,52 @@ const getAttendanceReport = async (startDate, endDate) => {
   }));
 };
 
+const getDashboardSummary = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const totalEmployees = await prisma.employee.count();
+  
+  const todayAttendance = await prisma.attendance.findMany({
+    where: {
+      timestamp: {
+        gte: today,
+        lt: tomorrow,
+      }
+    }
+  });
+
+  const report = {};
+  todayAttendance.forEach(record => {
+    const key = record.employeeId;
+    if (!report[key]) {
+      report[key] = { check_in: null, check_out: null };
+    }
+    if (record.type === 'IN') report[key].check_in = record.timestamp;
+    if (record.type === 'OUT') report[key].check_out = record.timestamp;
+  });
+
+  const summary = {
+    totalEmployee: totalEmployees,
+    presentToday: Object.keys(report).length,
+    late: 0,
+    incomplete: 0
+  };
+
+  Object.values(report).forEach(item => {
+    const status = getAttendanceStatus(item.check_in, item.check_out);
+    if (status === 'Late') summary.late++;
+    if (status === 'Incomplete') summary.incomplete++;
+  });
+
+  return summary;
+};
+
 module.exports = {
   getAllEmployees,
   createAttendance,
-  getAttendanceReport
+  getAttendanceReport,
+  getDashboardSummary
 };

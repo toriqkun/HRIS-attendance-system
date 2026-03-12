@@ -28,8 +28,18 @@ const getReport = async (req, res, next) => {
   }
 };
 
+const getSummary = async (req, res, next) => {
+  try {
+    const summary = await attendanceService.getDashboardSummary();
+    res.json(summary);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getEmployees,
   recordAttendance,
-  getReport
+  getReport,
+  getSummary
 };
