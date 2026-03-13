@@ -36,7 +36,7 @@ export default function AttendanceForm({ onSuccess }) {
       });
       setMessage({ 
         type: 'success', 
-        text: `Successfully checked ${type === 'IN' ? 'IN' : 'OUT'} at ${data.formatted_time}` 
+        text: `Successfully Checked ${type === 'IN' ? 'IN' : 'OUT'} at ${data.formatted_time}` 
       });
       if (onSuccess) onSuccess();
     } catch (error) {
