@@ -21,7 +21,7 @@ The **HRIS Attendance System** is designed to streamline the process of tracking
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 ### **Backend**
 - **Runtime**: Node.js
 - **Framework**: Express.js
