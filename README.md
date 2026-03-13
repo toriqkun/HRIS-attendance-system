@@ -1,8 +1,8 @@
-# HRIS Attendance System 🏢
+# HRIS Attendance System
 
 A modern, robust, and clean Employee Attendance Management System built with the Repository Pattern on both Backend and Frontend.
 
-## 🌟 Overview
+## Overview
 The **HRIS Attendance System** is designed to streamline the process of tracking employee attendance. It provides an intuitive interface for employees to record their check-in and check-out times, while giving administrators a clear overview of workforce presence, lateness, and reporting.
 
 **Key Problems Solved:**
@@ -12,7 +12,7 @@ The **HRIS Attendance System** is designed to streamline the process of tracking
 
 ---
 
-## ✨ Features
+## Features
 - **Live Dashboard**: Real-time stats showing total employees, present today, late arrivals, and incomplete logs.
 - **Attendance Portal**: Simple interface for employees to select their name and record "IN" or "OUT" status.
 - **Detailed Reporting**: Filterable attendance logs with status indicators (On Time, Late, etc.).
@@ -101,7 +101,7 @@ VITE_API_URL="http://localhost:5000"
 
 ---
 
-## 🏃 Running the Application
+## Running the Application
 
 ### **Start Backend**
 ```bash
@@ -120,7 +120,7 @@ The application will be available at `http://localhost:5173` while the API runs 
 
 ---
 
-## 📡 API Overview (Base: `/attendance`)
+## API Overview (Base: `/attendance`)
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/employees` | Get list of all registered employees |
@@ -130,7 +130,7 @@ The application will be available at `http://localhost:5173` while the API runs 
 
 ---
 
-## 🗄 Database Schema
+## Database Schema
 The project uses **PostgreSQL** with the following core models:
 
 - **Employee**: Stores employee profile (Name, Department, Position).
@@ -138,7 +138,3 @@ The project uses **PostgreSQL** with the following core models:
 - **AttendanceType**: Enum for `IN` and `OUT` types.
 
 Refer to `backend/prisma/schema.prisma` for the full technical schema.
-
----
-
-**Developed with ❤️ by Toriq**
