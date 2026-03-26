@@ -115,9 +115,7 @@ const getDashboardSummary = async () => {
 
   const totalEmployees = await employeeRepository.count();
   
-  // 1. Today's Stats
   const todayAttendance = await attendanceRepository.findTodayAttendance(today, tomorrow);
-
   const todayReport = {};
   todayAttendance.forEach(record => {
     const key = record.employeeId;
@@ -140,13 +138,10 @@ const getDashboardSummary = async () => {
     if (status === 'Incomplete') summary.incomplete++;
   });
 
-  // 2. Last 7 Days Efficiency
   const sevenDaysAgo = new Date(today);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
 
   const pastAttendance = await attendanceRepository.findAttendanceInRange(sevenDaysAgo, tomorrow, 'IN');
-
-  // Group by date
   const efficiencyMap = {};
   for (let i = 0; i < 7; i++) {
     const d = new Date(sevenDaysAgo);
